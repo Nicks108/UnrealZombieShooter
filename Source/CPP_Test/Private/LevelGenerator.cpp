@@ -111,10 +111,13 @@ void ALevelGenerator::BeginPlay()
 	// 	int i=0;
 	// }
 
-
-	for (FAssetData	Asset : AssetData)
+for(int y=0;y <CityGridSegments;y++)
+{
+	for (int x =0; x < CityGridSegments; x++)
 	{
-
+		
+		FAssetData	Asset = AssetData[FMath::RandRange(0, AssetData.Num()-1)];
+		double RandomeRot = 90 * FMath::RandRange(0, 4);
 		FStaticConstructObjectParameters params(ULevelStreamingDynamic::StaticClass());
 		params.Outer = GetWorld();
 		params.Name = FName(Asset.AssetName);
@@ -139,9 +142,9 @@ void ALevelGenerator::BeginPlay()
 		StreamingLevel->bInitiallyVisible = true;
 
 		FTransform A{
-			FRotator{},                 // Rotation
-			FVector{1.0f, 2.0f, 3.0f},  // Translation
-			FVector{2.0f, 2.0f, 2.0f}   // Scale
+			FRotator{0,RandomeRot,0},                 // Rotation
+			FVector{x*20000.0f, y*20000.0f,0.0f},  // Translation
+			FVector{1.0f, 1.0f, 1.0f}   // Scale
 		};
 
 		StreamingLevel->LevelTransform = A; // where to put it
@@ -171,8 +174,7 @@ void ALevelGenerator::BeginPlay()
 		UGameplayStatics::LoadStreamLevel(GetWorld(),FName(inst->GetName()), true, false, info2);
 		GetWorld()->UpdateLevelStreaming();
 	}
-
-
+}
 	
 	
 }

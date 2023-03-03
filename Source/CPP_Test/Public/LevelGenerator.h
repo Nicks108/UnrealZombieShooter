@@ -28,4 +28,7 @@ public:
 private:
 	UPROPERTY(EditAnywhere, Category = "Chunks")
 	TArray<FName> LevelChunckArray;
+	
+	UPROPERTY(EditAnywhere, Category = "Chunks")
+	int CityGridSegments;
 };
