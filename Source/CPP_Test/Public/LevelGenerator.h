@@ -31,4 +31,16 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = "Chunks")
 	int CityGridSegments;
+
+	UPROPERTY(EditAnywhere, Category = "Chunks")
+	float freq_x=0.2;
+	UPROPERTY(EditAnywhere, Category = "Chunks")
+	float freq_y =0.2;
+	UPROPERTY(EditAnywhere, Category = "Chunks")
+	float x_offset =0;
+	UPROPERTY(EditAnywhere, Category = "Chunks")
+	float y_offset =0;
+
+	float ConvertRange(float OldMin, float OldMax, float NewMin, float NewMax, float OldValue);
+	
 };

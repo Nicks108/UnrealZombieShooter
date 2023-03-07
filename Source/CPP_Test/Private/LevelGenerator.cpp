@@ -92,10 +92,28 @@ void ALevelGenerator::BeginPlay()
 	// PathsToScan.Add(TEXT("/Game/Levels"));
 	// IAssetRegistry& AssetRegistry = AssetRegisteryModule.Get();
 	// AssetRegistry.ScanPathsSynchronous(PathsToScan);
-
-	TArray<FAssetData> AssetData;
 	const UClass* Class = ULevel::StaticClass();
-	AssetRegisteryModule.Get().GetAssetsByPath(FName("/Game/Levels"), AssetData);
+
+
+	enum CITY_ZONE_TYPES
+	{
+		COMMERCIAL_LARGE,
+		COMMERCIAL,
+		RESIDENTIAL,
+		NUM_ZONE_TYPES
+		
+	};
+	TArray<FAssetData> AssetData[NUM_ZONE_TYPES]; 
+	
+	AssetRegisteryModule.Get().GetAssetsByPath(FName("/Game/Levels/commercial"), AssetData[COMMERCIAL]);
+
+	TArray<FAssetData> AssetDataCommercial_Large;
+	AssetRegisteryModule.Get().GetAssetsByPath(FName("/Game/Levels/commercial_Large"), AssetData[COMMERCIAL_LARGE]);
+
+	TArray<FAssetData> AssetDataResidential;
+	AssetRegisteryModule.Get().GetAssetsByPath(FName("/Game/Levels/residential"), AssetData[RESIDENTIAL]);
+
+	
 	
 	
 	// for (FAssetData	Asset : AssetData)
@@ -111,12 +129,58 @@ void ALevelGenerator::BeginPlay()
 	// 	int i=0;
 	// }
 
+	
+	
+	int** CityZoneGrid = new int*[CityGridSegments];
+	for(int i=0; i< CityGridSegments;i++)
+	{
+		CityZoneGrid[i] = new int[CityGridSegments];
+	}
+
+	
+	float MinValue=INTMAX_MAX;
+	float MaxValue= 0 ;
+	for (int y=0; y< CityGridSegments; y ++)
+	{
+		for (int x =0; x < CityGridSegments; x++)
+		{
+			float p = FMath::PerlinNoise2D(FVector2D(freq_x * (x) + x_offset, freq_y *y + y_offset ));
+			float p1= p + 1.0;
+			float Pd2 = p1/2.0;
+			int f = Pd2*NUM_ZONE_TYPES;
+			CityZoneGrid[x][y]= f;
+			//UE_LOG(LogLevelGen, Warning, TEXT("zone Perlin  %f, %f, %f, %i "), p, p1,Pd2, f );
+
+			if(f < MinValue)
+				MinValue = f;
+			if(f > MaxValue)
+				MaxValue = f;
+		}
+		
+	}
+
+	// for (int y=0; y< CityGridSegments; y ++)
+	// {
+	// 	for (int x =0; x < CityGridSegments; x++)
+	// 	{
+	// 		UE_LOG(LogLevelGen, Warning, TEXT("zone Perlin Range %f"), CityZoneGrid[x][y]);
+	// 		CityZoneGrid[x][y] = ConvertRange( MinValue, MaxValue, 0 , NUM_ZONE_TYPES-1, CityZoneGrid[x][y]);
+	// 		UE_LOG(LogLevelGen, Warning, TEXT("zone Perlin New Range %f"), CityZoneGrid[x][y]);
+	// 	}
+	// }
+	
+
+	
+
 for(int y=0;y <CityGridSegments;y++)
 {
 	for (int x =0; x < CityGridSegments; x++)
 	{
-		
-		FAssetData	Asset = AssetData[FMath::RandRange(0, AssetData.Num()-1)];
+			//get randome zone
+		int RandomeZoneType = CityZoneGrid[x][y];
+
+		//get randome tile in zone
+		FAssetData	Asset = AssetData[RandomeZoneType][FMath::RandRange(0,AssetData[RandomeZoneType].Num()-1)];
 		double RandomeRot = 90 * FMath::RandRange(0, 4);
 		FStaticConstructObjectParameters params(ULevelStreamingDynamic::StaticClass());
 		params.Outer = GetWorld();
@@ -184,6 +248,15 @@ void ALevelGenerator::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+
+float ALevelGenerator::ConvertRange(float OldMin, float OldMax, float NewMin, float NewMax, float OldValue)
+{
+	float OldRange = (OldMax - OldMin);  
+	float NewRange = (NewMax - NewMin) ; 
+	float NewValue = (((OldValue - OldMin) * NewRange) / OldRange) + NewMin;
+	return NewValue;
 }
 
 
