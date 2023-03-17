@@ -13,5 +13,26 @@ UCLASS()
 class CPP_TEST_API AA_PlayerCharacterBase : public AA_CharacterBase
 {
 	GENERATED_BODY()
-	
+
+public:
+	AA_PlayerCharacterBase();
+
+protected:
+	virtual  void BeginPlay() override;
+private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	class UCameraComponent* Camera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	class USpringArmComponent* SpringArm;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	double Speed = 1;
+
+
+	void Move(float Value);
+
+public:
+	virtual void Tick(float DeltaSeconds) override;
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 };
