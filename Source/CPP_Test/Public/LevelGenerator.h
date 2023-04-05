@@ -4,22 +4,8 @@
 DECLARE_LOG_CATEGORY_EXTERN(LogLevelGen, Log, All);
 
 #include "CoreMinimal.h"
-#include "Containers/Map.h"
-
 #include "GameFramework/Actor.h"
-
 #include "LevelGenerator.generated.h"
-
-
-UENUM()
-enum CITY_ZONE_TYPES
-{
-	COMMERCIAL_LARGE,
-	COMMERCIAL,
-	RESIDENTIAL,
-	NUM_ZONE_TYPES
-};
-
 
 UCLASS()
 class CPP_TEST_API ALevelGenerator : public AActor
@@ -54,8 +40,6 @@ private:
 	float x_offset =0;
 	UPROPERTY(EditAnywhere, Category = "Chunks")
 	float y_offset =0;
-	
-	
 
 	float ConvertRange(float OldMin, float OldMax, float NewMin, float NewMax, float OldValue);
 	

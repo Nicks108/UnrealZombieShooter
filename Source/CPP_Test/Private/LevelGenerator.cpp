@@ -6,9 +6,7 @@
 #include <string>
 
 #include "EngineUtils.h"
-#include "GameplayTagContainer.h"
 #include "AssetRegistry/AssetRegistryModule.h"
-#include "Engine/AssetManager.h"
 #include "Engine/LevelStreamingKismet.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -43,6 +41,7 @@ ALevelGenerator::ALevelGenerator()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
 }
 
 // Called when the game starts or when spawned
@@ -96,46 +95,25 @@ void ALevelGenerator::BeginPlay()
 	const UClass* Class = ULevel::StaticClass();
 
 
-
+	enum CITY_ZONE_TYPES
+	{
+		COMMERCIAL_LARGE,
+		COMMERCIAL,
+		RESIDENTIAL,
+		NUM_ZONE_TYPES
+		
+	};
+	TArray<FAssetData> AssetData[NUM_ZONE_TYPES]; 
 	
-	TArray<FAssetData> AssetData[CITY_ZONE_TYPES::NUM_ZONE_TYPES]; 
-	
-	AssetRegisteryModule.Get().GetAssetsByPath(FName("/Game/Levels/commercial"), AssetData[CITY_ZONE_TYPES::COMMERCIAL]);
+	AssetRegisteryModule.Get().GetAssetsByPath(FName("/Game/Levels/commercial"), AssetData[COMMERCIAL]);
 
 	TArray<FAssetData> AssetDataCommercial_Large;
-	AssetRegisteryModule.Get().GetAssetsByPath(FName("/Game/Levels/commercial_Large"), AssetData[CITY_ZONE_TYPES::COMMERCIAL_LARGE]);
+	AssetRegisteryModule.Get().GetAssetsByPath(FName("/Game/Levels/commercial_Large"), AssetData[COMMERCIAL_LARGE]);
 
 	TArray<FAssetData> AssetDataResidential;
-	AssetRegisteryModule.Get().GetAssetsByPath(FName("/Game/Levels/residential"), AssetData[CITY_ZONE_TYPES::RESIDENTIAL]);
+	AssetRegisteryModule.Get().GetAssetsByPath(FName("/Game/Levels/residential"), AssetData[RESIDENTIAL]);
 
-	UE_LOG(LogLevelGen, Warning, TEXT("num assets loaded  %i "), AssetData[0].Num());
-
-
-
-	// FPrimaryAssetType AssetType(TEXT("Level"));
-	//
-	// UAssetManager& AssetManager = UAssetManager::Get();
-	// TArray<FPrimaryAssetId> AssestIdList;
-	// AssetManager.GetPrimaryAssetIdList(AssetType, AssestIdList);
-	//
-	// UE_LOG(LogLevelGen, Warning, TEXT("AssetIdNunm %i"), AssestIdList.Num());
-	//
-	// for(const FPrimaryAssetId& assetId : AssestIdList)
-	// {
-	// 	// Get tag/value data for an unloaded weapon
-	//
-	// 	FAssetData AssetDataToParse;
-	// 	AssetManager.GetPrimaryAssetData(assetId, AssetDataToParse);
-	//
-	// 	FString GameplayTagString;
-	// 	FGameplayTag LoadedTag;
-	//
-	// 	
-	//
-	// 	UE_LOG(LogLevelGen, Warning, TEXT("Asset Name %s, Location %s"),*AssetDataToParse.AssetName.ToString(), *AssetDataToParse.PackagePath.ToString());
-	// }
-
-
+	
 	
 	
 	// for (FAssetData	Asset : AssetData)
@@ -169,19 +147,14 @@ void ALevelGenerator::BeginPlay()
 			float p = FMath::PerlinNoise2D(FVector2D(freq_x * (x) + x_offset, freq_y *y + y_offset ));
 			float p1= p + 1.0;
 			float Pd2 = p1/2.0;
-			float Pd =0;
-			if(Pd2 >0.6)
-				Pd =1;
-			else if (Pd2<0.4)
-				Pd = 0;
-			else
-				Pd=0.5;
-			int f = Pd*( CITY_ZONE_TYPES::NUM_ZONE_TYPES-1);
-			
-			
+			int f = Pd2*NUM_ZONE_TYPES;
 			CityZoneGrid[x][y]= f;
-			//UE_LOG(LogLevelGen, Warning, TEXT("zone Perlin  %f, %f, %f , %f, %i "), p, p1,Pd2, Pd, f );
+			//UE_LOG(LogLevelGen, Warning, TEXT("zone Perlin  %f, %f, %f, %i "), p, p1,Pd2, f );
 
+			if(f < MinValue)
+				MinValue = f;
+			if(f > MaxValue)
+				MaxValue = f;
 		}
 		
 	}
@@ -206,13 +179,8 @@ for(int y=0;y <CityGridSegments;y++)
 			//get randome zone
 		int RandomeZoneType = CityZoneGrid[x][y];
 
-		//UE_LOG(LogLevelGen, Warning, TEXT("RandomeZoneType  %i"),RandomeZoneType);
-		//UE_LOG(LogLevelGen, Warning, TEXT("AssetData[RandomeZoneType].num()  %i"),AssetData[RandomeZoneType].Num());
-		//UE_LOG(LogLevelGen, Warning, TEXT("AssetData[RandomeZoneType].num()  %i"),AssetData[RandomeZoneType].Num());
-		int RandomeTile = FMath::RandRange(0,AssetData[RandomeZoneType].Num()-1);
-		//UE_LOG(LogLevelGen, Warning, TEXT("RandomeTile  %i"),RandomeTile);
 		//get randome tile in zone
-		FAssetData	Asset = AssetData[RandomeZoneType][RandomeTile];
+		FAssetData	Asset = AssetData[RandomeZoneType][FMath::RandRange(0,AssetData[RandomeZoneType].Num()-1)];
 		double RandomeRot = 90 * FMath::RandRange(0, 4);
 		FStaticConstructObjectParameters params(ULevelStreamingDynamic::StaticClass());
 		params.Outer = GetWorld();
@@ -247,7 +215,7 @@ for(int y=0;y <CityGridSegments;y++)
 		
 		StreamingLevel->PackageNameToLoad =Asset.PackageName; // PackageName containing level to load
 
-		//UE_LOG(LogLevelGen, Warning, TEXT("trying to loadlevel %s"), *StreamingLevel->PackageNameToLoad.ToString());
+		UE_LOG(LogLevelGen, Warning, TEXT("trying to loadlevel %s"), *StreamingLevel->PackageNameToLoad.ToString());
 
 		
 		FString PackageFileName;
