@@ -112,22 +112,23 @@ void ALevelGenerator::BeginPlay()
 
 	TArray<FAssetData> AssetDataResidential;
 	AssetRegisteryModule.Get().GetAssetsByPath(FName("/Game/Levels/residential"), AssetData[RESIDENTIAL]);
-
 	
 	
 	
-	// for (FAssetData	Asset : AssetData)
-	// {
-	// 	UE_LOG(LogLevelGen, Warning, TEXT("Asset name %s "), *Asset.AssetName.ToString());
-	// 	UE_LOG(LogLevelGen, Warning, TEXT("Asset Class %s"), *Asset.AssetClassPath.ToString());
-	//
-	// 	ULevel* AssetAsULevel= Cast<ULevel>(Asset.GetAsset());
-	// 	
-	// 	LevelChunckArray.Add(Asset.PackageName);
-	//
-	// 	FLatentActionInfo LatentInfo;
-	// 	int i=0;
-	// }
+	
+	for (FAssetData	Asset : AssetData[COMMERCIAL])
+	{
+		UE_LOG(LogLevelGen, Warning, TEXT("Asset name %s "), *Asset.AssetName.ToString());
+		UE_LOG(LogLevelGen, Warning, TEXT("Asset Class %s"), *Asset.AssetClassPath.ToString());
+		Asset.
+		// ULevel* AssetAsULevel= Cast<ULevel>(Asset.GetAsset());
+		//
+		// LevelChunckArray.Add(Asset.PackageName);
+		//
+		// FLatentActionInfo LatentInfo;
+		// int i=0;
+		UE_LOG(LogLevelGen, Warning, TEXT("--------------------------") );
+	}
 
 	
 	
