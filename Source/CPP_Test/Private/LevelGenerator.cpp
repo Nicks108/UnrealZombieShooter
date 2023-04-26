@@ -115,23 +115,30 @@ void ALevelGenerator::BeginPlay()
 	
 	
 	
-	
-	for (FAssetData	Asset : AssetData[COMMERCIAL])
-	{
-		UE_LOG(LogLevelGen, Warning, TEXT("Asset name %s "), *Asset.AssetName.ToString());
-		UE_LOG(LogLevelGen, Warning, TEXT("Asset Class %s"), *Asset.AssetClassPath.ToString());
-		Asset.
-		// ULevel* AssetAsULevel= Cast<ULevel>(Asset.GetAsset());
-		//
-		// LevelChunckArray.Add(Asset.PackageName);
-		//
-		// FLatentActionInfo LatentInfo;
-		// int i=0;
-		UE_LOG(LogLevelGen, Warning, TEXT("--------------------------") );
-	}
-
-	
-	
+	// UE_LOG(LogLevelGen, Warning, TEXT("NUm commercial elements %i "),AssetData[COMMERCIAL].Num());
+	// for (FAssetData	Asset : AssetData[COMMERCIAL])
+	// {
+	// 	UE_LOG(LogLevelGen, Warning, TEXT("Asset name %s "), *Asset.AssetName.ToString());
+	// 	UE_LOG(LogLevelGen, Warning, TEXT("Asset Class %s"), *Asset.AssetClassPath.ToString());
+	// 	
+	// 	// ULevel* AssetAsULevel= Cast<ULevel>(Asset.GetAsset());
+	// 	//
+	// 	// LevelChunckArray.Add(Asset.PackageName);
+	// 	//
+	// 	// FLatentActionInfo LatentInfo;
+	// 	// int i=0;
+	// 	
+	// 	if(!Asset.IsInstanceOf<ULevel>())
+	// 	{
+	// 		UE_LOG(LogLevelGen, Warning, TEXT("removing asset") );
+	// 		AssetData[COMMERCIAL].Remove(Asset);
+	// 	}
+	// 	UE_LOG(LogLevelGen, Warning, TEXT("--------------------------") );
+	// }
+	// //AssetData[COMMERCIAL].Empty();
+	// UE_LOG(LogLevelGen, Warning, TEXT("NUm commercial elements after remove %i "),AssetData[COMMERCIAL].Num());
+	//
+	//
 	int** CityZoneGrid = new int*[CityGridSegments];
 	for(int i=0; i< CityGridSegments;i++)
 	{
